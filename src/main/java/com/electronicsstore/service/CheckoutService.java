@@ -1,9 +1,6 @@
 package com.electronicsstore.service;
 
-import com.electronicsstore.model.BasketItem;
-import com.electronicsstore.model.Customer;
-import com.electronicsstore.model.Receipt;
-import com.electronicsstore.model.ReceiptItem;
+import com.electronicsstore.model.*;
 import com.electronicsstore.repository.BasketItemRepository;
 import com.electronicsstore.repository.CustomerRepository;
 import com.electronicsstore.repository.ProductRepository;
@@ -58,10 +55,12 @@ public class CheckoutService {
         List<BasketItem> basketItems = basketItemRepository.findByCustomerId(customerId);
 
         Receipt receipt = createReceipt(customer, basketItems);
+        receiptRepository.save(receipt);
 
-        // TODO include logic to update the inventory
+        updateProductInventory(basketItems);
+        clearBasketItems(customerId);
 
-        return receiptRepository.save(receipt);
+        return receipt;
     }
 
     private BigDecimal calculateTotalAmount(List<BasketItem> basketItems) {
@@ -91,5 +90,23 @@ public class CheckoutService {
         receipt.setReceiptItems(receiptItems);
 
         return receipt;
+    }
+
+    private void updateProductInventory(List<BasketItem> basketItems) {
+        for (BasketItem item : basketItems) {
+            Product product = item.getProduct();
+            int quantityToDeduct = item.getQuantity();
+
+            if (product.getInventory() < quantityToDeduct) {
+                throw new RuntimeException("Insufficient inventory for product: " + product.getProductId());
+            }
+
+            product.setInventory(product.getInventory() - quantityToDeduct);
+            productRepository.save(product);
+        }
+    }
+
+    private void clearBasketItems(Long customerId) {
+        basketItemRepository.deleteByCustomerId(customerId);
     }
 }

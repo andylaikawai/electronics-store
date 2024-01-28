@@ -9,9 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
-// TODO
-// 1. exception management
-// 2. Validation
 @Service
 public class ProductService {
 

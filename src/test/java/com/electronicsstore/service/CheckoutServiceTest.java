@@ -93,6 +93,10 @@ class CheckoutServiceIntegrationTest {
         assertThat(receipt.getReceiptItems().getFirst().getProduct().getProductId()).isEqualTo(productId);
         assertThat(receipt.getReceiptItems().getFirst().getQuantity()).isEqualTo(2);
 
+        // Verify that product inventory is updated
+        Product productPostCheckout = productRepository.findById(productId).orElseThrow();
+        assertThat(productPostCheckout.getInventory()).isEqualTo(97L);
+
         // Verify that the basket is now empty
         List<BasketItem> basketItemsPostCheckout = basketItemRepository.findByCustomerId(customerId);
         assertThat(basketItemsPostCheckout).isEmpty();
