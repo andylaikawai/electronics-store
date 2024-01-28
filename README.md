@@ -4,15 +4,16 @@
 
 1. Install jdk21 (https://www.oracle.com/java/technologies/downloads/#java21)
 2. Install gradle (https://gradle.org/install/)
+3. Generate gradle wrapper files with `gradle wrapper`
 
 ## Build
 
-`gradle build`
+`./gradlew build`
 
 ## Start the Application
 
-`gradle run`
+`./gradlew run`
 
 ## Run Unit Test
 
-`gradle test`
+`./gradlew test`

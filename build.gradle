@@ -16,9 +16,21 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	// Spring Boot starter web for building servlet-based web applications
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Spring Boot starter data JPA for JPA repositories
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// H2 database for in-memory database support
+	runtimeOnly 'com.h2database:h2'
+
+	// Lombok for boilerplate code reduction
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Spring Boot starter test for testing
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
 }
 
 tasks.named('test') {
