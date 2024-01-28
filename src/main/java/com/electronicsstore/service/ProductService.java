@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
 
 // TODO
 // 1. exception management
@@ -30,7 +29,12 @@ public class ProductService {
     }
 
     @Transactional
-    public Product createOrUpdateProduct(Product product) {
+    public Product createProduct(String name, BigDecimal price, Long inventory) {
+        Product product = Product.builder()
+                .name(name)
+                .price(price)
+                .inventory(inventory)
+                .build();
         return productRepository.save(product);
     }
 

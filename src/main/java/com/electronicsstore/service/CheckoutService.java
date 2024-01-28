@@ -1,8 +1,9 @@
 package com.electronicsstore.service;
 
-import com.electronicsstore.model.Basket;
+import com.electronicsstore.model.BasketItem;
 import com.electronicsstore.model.Receipt;
-import com.electronicsstore.repository.BasketRepository;
+import com.electronicsstore.model.ReceiptItem;
+import com.electronicsstore.repository.BasketItemRepository;
 import com.electronicsstore.repository.ProductRepository;
 import com.electronicsstore.repository.ReceiptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,54 +12,62 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CheckoutService {
 
-    private final BasketRepository basketRepository;
+    private final BasketItemRepository basketItemRepository;
     private final ProductRepository productRepository;
     private final ReceiptRepository receiptRepository;
 
     @Autowired
-    public CheckoutService(BasketRepository basketRepository,
+    public CheckoutService(BasketItemRepository basketItemRepository,
                            ProductRepository productRepository,
                            ReceiptRepository receiptRepository) {
-        this.basketRepository = basketRepository;
+        this.basketItemRepository = basketItemRepository;
         this.productRepository = productRepository;
         this.receiptRepository = receiptRepository;
     }
 
     @Transactional
-    public Receipt checkoutBasket(Long basketId) {
-        Basket basket = basketRepository.findById(basketId)
-                .orElseThrow(() -> new RuntimeException("Basket not found"));
+    public Receipt checkout(Long customerId) {
 
+        List<BasketItem> basketItems = basketItemRepository.findByCustomerId(customerId);
 
-        Receipt receipt = createReceipt(basket);
+        Receipt receipt = createReceipt(basketItems);
 
         receipt = receiptRepository.save(receipt);
 
-        // TODO include logic to update the inventory, if necessary
+        // TODO include logic to update the inventory
 
         return receipt;
     }
 
-    private BigDecimal calculateTotalAmount(Basket basket) {
-        return basket.getItems().stream()
+    private BigDecimal calculateTotalAmount(List<BasketItem> basketItems) {
+        return basketItems.stream()
                 .map(item -> {
                     BigDecimal quantity = BigDecimal.valueOf(item.getQuantity());
-                    return item.getProduct().getPrice().multiply(quantity);
+                    return item.getProduct().getPrice().multiply(quantity); // TODO discount
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private Receipt createReceipt(Basket basket) {
-        BigDecimal totalAmount = calculateTotalAmount(basket);
+    private Receipt createReceipt(List<BasketItem> basketItems) {
+        BigDecimal totalPrice = calculateTotalAmount(basketItems);
+        Receipt receipt = Receipt.builder()
+                .totalPrice(totalPrice)
+                .issueDate(LocalDateTime.now())
+                .build();
 
-        Receipt receipt = new Receipt();
-        receipt.setBasket(basket); // TODO recreate new basket for the customer?
-        receipt.setTotalAmount(totalAmount);
-        receipt.setIssueDate(LocalDateTime.now());
+        List<ReceiptItem> receiptItems = basketItems.stream().map(basketItem -> ReceiptItem.builder()
+                .product(basketItem.getProduct())
+                .quantity(basketItem.getQuantity())
+                .receipt(receipt)
+                .build()).toList();
+
+        receipt.setReceiptItems(receiptItems);
+
         return receipt;
     }
 }

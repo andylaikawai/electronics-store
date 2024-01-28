@@ -25,8 +25,11 @@ public class CustomerService {
     }
 
     @Transactional
-    public Customer createOrUpdateCustomer(Customer Customer) {
-        return CustomerRepository.save(Customer);
+    public Customer createCustomer(String name) {
+        Customer customer = Customer.builder()
+                .name(name)
+                .build();
+        return CustomerRepository.save(customer);
     }
 
     @Transactional

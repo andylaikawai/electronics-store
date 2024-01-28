@@ -2,9 +2,10 @@ package com.electronicsstore.service;
 
 import com.electronicsstore.model.BasketItem;
 import com.electronicsstore.repository.BasketItemRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class BasketItemService {
@@ -16,18 +17,24 @@ public class BasketItemService {
     }
 
     @Transactional(readOnly = true)
-    public BasketItem getBasketItemById(Long id) {
-        return basketItemRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("BasketItem not found with id: " + id));
+    public List<BasketItem> getBasketItemsByCustomerId(Long customerId) {
+        return basketItemRepository.findByCustomerId(customerId);
     }
 
     @Transactional
-    public BasketItem createOrUpdateBasketItem(BasketItem basketItem) {
-        return basketItemRepository.save(basketItem);
-    }
-
-    @Transactional
-    public void deleteBasketItem(Long id) {
-        basketItemRepository.deleteById(id);
+    public BasketItem addOrUpdate(Long customerId, Long productId, int quantity) {
+        BasketItem existingBasketItem = basketItemRepository.findByCustomerIdAndProductId(customerId, productId).orElse(null);
+        if (existingBasketItem != null) {
+            // add quantity
+            existingBasketItem.setQuantity(existingBasketItem.getQuantity() + quantity);
+            return basketItemRepository.save(existingBasketItem);
+        } else {
+            BasketItem newBasketItem = BasketItem.builder()
+                    .customerId(customerId)
+                    .productId(productId)
+                    .quantity(quantity)
+                    .build();
+            return basketItemRepository.save(newBasketItem);
+        }
     }
 }
