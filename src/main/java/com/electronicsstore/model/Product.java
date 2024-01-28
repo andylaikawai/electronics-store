@@ -1,5 +1,6 @@
 package com.electronicsstore.model;
 
+import com.electronicsstore.dto.ProductDto;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -33,5 +34,6 @@ public class Product {
     @Column(name = "inventory")
     @PositiveOrZero
     @NonNull
-    private Long inventory;
+    private int inventory;
+
 }

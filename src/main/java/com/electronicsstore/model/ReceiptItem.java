@@ -20,7 +20,7 @@ public class ReceiptItem {
 
     @Column(name = "quantity")
     @PositiveOrZero
-    private Integer quantity;
+    private int quantity;
 
     @ManyToOne
     @JoinColumn(name = "receipt_id")

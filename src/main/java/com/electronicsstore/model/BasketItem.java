@@ -24,7 +24,7 @@ public class BasketItem {
 
     @Column(name = "quantity")
     @PositiveOrZero
-    private Integer quantity;
+    private int quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", insertable = false, updatable = false)

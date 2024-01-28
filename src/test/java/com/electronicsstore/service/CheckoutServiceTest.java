@@ -51,7 +51,7 @@ class CheckoutServiceIntegrationTest {
         Product product = Product.builder()
                 .name("Test Product")
                 .price(BigDecimal.valueOf(99.99))
-                .inventory(99L)
+                .inventory(99)
                 .build();
         product = productRepository.save(product);
         productId = product.getProductId();
@@ -76,6 +76,7 @@ class CheckoutServiceIntegrationTest {
         assertThat(preview.getReceiptItems()).hasSize(1);
         assertThat(preview.getReceiptItems().getFirst().getProduct().getProductId()).isEqualTo(productId);
         assertThat(preview.getReceiptItems().getFirst().getQuantity()).isEqualTo(2);
+        assertThat(preview.getReceiptItems().getFirst().getReceiptItemId()).isNull();
     }
 
     @Test
@@ -87,7 +88,9 @@ class CheckoutServiceIntegrationTest {
 
         // Then
         assertThat(receipt).isNotNull();
-        assertThat(receipt.getReceiptId()).isNotNull(); // Saved receipts should have an ID
+        assertThat(receipt.getReceiptId()).isNotNull();
+        assertThat(receipt.getCustomer()).isNotNull();
+        assertThat(receipt.getCustomer().getCustomerId()).isEqualTo(customerId);
         assertThat(receipt.getTotalPrice()).isEqualTo(BigDecimal.valueOf(199.98));
         assertThat(receipt.getReceiptItems()).hasSize(1);
         assertThat(receipt.getReceiptItems().getFirst().getProduct().getProductId()).isEqualTo(productId);
@@ -95,7 +98,7 @@ class CheckoutServiceIntegrationTest {
 
         // Verify that product inventory is updated
         Product productPostCheckout = productRepository.findById(productId).orElseThrow();
-        assertThat(productPostCheckout.getInventory()).isEqualTo(97L);
+        assertThat(productPostCheckout.getInventory()).isEqualTo(97);
 
         // Verify that the basket is now empty
         List<BasketItem> basketItemsPostCheckout = basketItemRepository.findByCustomerId(customerId);

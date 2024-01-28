@@ -24,7 +24,7 @@ class ProductServiceIntegrationTest {
         // Given
         String name = "Test Product";
         BigDecimal price = new BigDecimal("99.99");
-        Long inventory = 100L;
+        int inventory = 100;
 
         // When
         Product savedProduct = productService.createProduct(name, price, inventory);

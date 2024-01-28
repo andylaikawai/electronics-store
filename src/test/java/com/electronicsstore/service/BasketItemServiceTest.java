@@ -44,7 +44,7 @@ class BasketItemServiceIntegrationTest {
         Product product = Product.builder()
                 .name("Test Product")
                 .price(BigDecimal.TEN)
-                .inventory(10L)
+                .inventory(10)
                 .build();
         Product savedProduct = productRepository.save(product);
         productId = savedProduct.getProductId();

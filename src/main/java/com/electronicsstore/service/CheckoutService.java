@@ -42,11 +42,6 @@ public class CheckoutService {
         return createReceipt(customer, basketItems);
     }
 
-    @Transactional(readOnly = true)
-    public List<Receipt> getReceiptsByCustomerId(Long customerId) {
-        return receiptRepository.findByCustomer_CustomerId(customerId);
-    }
-
     @Transactional
     public Receipt checkout(Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() ->

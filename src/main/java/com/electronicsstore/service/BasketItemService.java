@@ -1,7 +1,10 @@
 package com.electronicsstore.service;
 
 import com.electronicsstore.model.BasketItem;
+import com.electronicsstore.model.Customer;
 import com.electronicsstore.repository.BasketItemRepository;
+import com.electronicsstore.repository.CustomerRepository;
+import com.electronicsstore.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +16,14 @@ public class BasketItemService {
 
     private final BasketItemRepository basketItemRepository;
 
-    public BasketItemService(BasketItemRepository basketItemRepository) {
+    private final ProductRepository productRepository;
+
+    private final CustomerRepository customerRepository;
+
+    public BasketItemService(BasketItemRepository basketItemRepository, ProductRepository productRepository, CustomerRepository customerRepository) {
         this.basketItemRepository = basketItemRepository;
+        this.productRepository = productRepository;
+        this.customerRepository = customerRepository;
     }
 
     @Transactional(readOnly = true)
@@ -24,6 +33,9 @@ public class BasketItemService {
 
     @Transactional
     public BasketItem addOrUpdate(Long customerId, Long productId, int quantity) {
+        customerRepository.findById(customerId).orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
+        productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+
         BasketItem existingBasketItem = basketItemRepository.findByCustomerIdAndProductId(customerId, productId).orElse(null);
         if (existingBasketItem != null) {
             // add quantity

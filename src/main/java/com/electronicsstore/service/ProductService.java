@@ -26,7 +26,7 @@ public class ProductService {
     }
 
     @Transactional
-    public Product createProduct(String name, BigDecimal price, Long inventory) {
+    public Product createProduct(String name, BigDecimal price, int inventory) {
         Product product = Product.builder()
                 .name(name)
                 .price(price)
@@ -36,7 +36,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long id) {
+    public void removeProduct(Long id) {
         productRepository.deleteById(id);
     }
 

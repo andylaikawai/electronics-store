@@ -26,4 +26,5 @@ public class Customer {
     @Column(name = "name")
     @NotNull
     private String name;
+
 }

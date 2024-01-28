@@ -51,7 +51,7 @@ public class ConcurrentTest {
     @BeforeEach
     public void setUp() {
         // Initialize customers and product
-        productIdToAdd = productService.createProduct("MOCK_PRODUCT", productUnitPrice, 20L).getProductId();
+        productIdToAdd = productService.createProduct("MOCK_PRODUCT", productUnitPrice, 20).getProductId();
         for (int i = 0; i < numberOfConcurrentCustomers; i++) {
             Customer customer = customerService.createCustomer("MOCK-CUSTOMER-" + i);
             customers.add(customer);
