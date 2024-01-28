@@ -27,7 +27,7 @@ public class Receipt {
     @NotNull
     private LocalDateTime issueDate;
 
-    @OneToMany
+    @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
     private List<ReceiptItem> receiptItems;
 
     @Column(name = "total_amount")
@@ -35,6 +35,7 @@ public class Receipt {
     @PositiveOrZero
     private BigDecimal totalPrice;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", insertable = false, updatable = false)
     private Customer customer;
 }
