@@ -41,7 +41,7 @@ public class CustomerController {
         return new ResponseEntity<>(basketItem, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("{customerId}/basket/{basketItemId}")
+    @DeleteMapping("{customerId}/basket/{productId}")
     public ResponseEntity<Void> removeProductFromBasket(@PathVariable Long customerId, @PathVariable Long productId) {
         basketItemService.remove(customerId, productId);
         return ResponseEntity.ok().build();
