@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,8 +24,11 @@ public class Receipt {
     @Column(name = "issue_date", nullable = false)
     private LocalDateTime issueDate;
 
+    @OneToOne
+    private Basket basket;
+
     @Column(name = "total_amount", nullable = false)
-    private Double totalAmount;
+    private BigDecimal totalAmount;
 
     @ManyToOne
     private Customer customer;

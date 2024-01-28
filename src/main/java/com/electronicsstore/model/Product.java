@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "products")
 @NoArgsConstructor
@@ -22,5 +24,5 @@ public class Product {
     private String name;
 
     @Column(name = "price", nullable = false)
-    private Double price;
+    private BigDecimal price;
 }
