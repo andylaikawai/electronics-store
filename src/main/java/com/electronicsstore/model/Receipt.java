@@ -1,34 +1,39 @@
 package com.electronicsstore.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "receipts")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "receiptId")
 public class Receipt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long receiptId;
 
-    @Column(name = "issue_date", nullable = false)
+    @Column(name = "issue_date")
+    @NotNull
     private LocalDateTime issueDate;
 
-    @OneToOne
-    private Basket basket;
+    @OneToMany
+    private List<ReceiptItem> receiptItems;
 
-    @Column(name = "total_amount", nullable = false)
-    private BigDecimal totalAmount;
+    @Column(name = "total_amount")
+    @NotNull
+    @PositiveOrZero
+    private BigDecimal totalPrice;
 
     @ManyToOne
     private Customer customer;

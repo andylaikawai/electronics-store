@@ -1,44 +1,37 @@
 package com.electronicsstore.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.EqualsAndHashCode;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
+import lombok.*;
 
 @Entity
 @Table(name = "basket_items")
+@IdClass(BasketItemKey.class)
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
+@AllArgsConstructor
 public class BasketItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @Column(name = "customer_id")
+    private Long customerId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "basket_id")
-    private Basket basket;
+    @Id
+    @Column(name = "product_id")
+    private Long productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-    @Column(name = "quantity", nullable = false)
+    @Column(name = "quantity")
+    @PositiveOrZero
     private Integer quantity;
 
-    public BasketItem(Product product, Integer quantity) {
-        this.product = product;
-        this.quantity = quantity;
-    }
+    @ManyToOne
+    @JoinColumn(name = "customer_id", insertable = false, updatable = false)
+    private Customer customer;
+
+    @ManyToOne
+    @MapsId("productId")
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private Product product;
 }
