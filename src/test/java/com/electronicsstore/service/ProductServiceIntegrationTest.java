@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-class ProductServiceTest {
+class ProductServiceIntegrationTest {
     @Autowired
     private ProductRepository productRepository;
 

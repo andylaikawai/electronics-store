@@ -2,6 +2,7 @@ package com.electronicsstore.service;
 
 import com.electronicsstore.model.BasketItem;
 import com.electronicsstore.repository.BasketItemRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,5 +37,13 @@ public class BasketItemService {
                     .build();
             return basketItemRepository.save(newBasketItem);
         }
+    }
+
+    @Transactional
+    public void remove(Long customerId, Long productId) {
+        BasketItem existingBasketItem = basketItemRepository.findByCustomerIdAndProductId(customerId, productId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("BasketItem not found with customer id: %d and product id: %d", customerId, productId)));
+
+        basketItemRepository.deleteByCustomerIdAndProductId(existingBasketItem.getCustomerId(), existingBasketItem.getProductId());
     }
 }

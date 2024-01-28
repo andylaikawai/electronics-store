@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,13 +52,7 @@ class BasketItemServiceIntegrationTest {
 
     @Test
     public void testGetBasketItemsByCustomerId() {
-        // Setup initial basket item
-        BasketItem basketItem = BasketItem.builder()
-                .customerId(customerId)
-                .productId(productId)
-                .quantity(1)
-                .build();
-        basketItemRepository.save(basketItem);
+        setUpInitialBasketItem();
 
         List<BasketItem> basketItems = basketItemService.getBasketItemsByCustomerId(customerId);
 
@@ -78,13 +73,7 @@ class BasketItemServiceIntegrationTest {
 
     @Test
     public void testUpdateExistingBasketItem() {
-        // Setup initial basket item with quantity 1
-        BasketItem existingBasketItem = BasketItem.builder()
-                .customerId(customerId)
-                .productId(productId)
-                .quantity(1)
-                .build();
-        basketItemRepository.save(existingBasketItem);
+        setUpInitialBasketItem();
 
         BasketItem updatedBasketItem = basketItemService.addOrUpdate(customerId, productId, 3);
 
@@ -92,5 +81,27 @@ class BasketItemServiceIntegrationTest {
         assertThat(updatedBasketItem.getCustomerId()).isEqualTo(customerId);
         assertThat(updatedBasketItem.getProductId()).isEqualTo(productId);
         assertThat(updatedBasketItem.getQuantity()).isEqualTo(4);
+    }
+
+    @Test
+    void testRemoveExistingBasketItem() {
+        setUpInitialBasketItem();
+
+        // When
+        basketItemService.remove(customerId, productId);
+
+        // Then
+        Optional<BasketItem> deletedBasketItem = basketItemRepository.findByCustomerIdAndProductId(customerId, productId);
+        assertThat(deletedBasketItem).isEmpty();
+    }
+
+    private void setUpInitialBasketItem(){
+        // Setup initial basket item with quantity 1
+        BasketItem existingBasketItem = BasketItem.builder()
+                .customerId(customerId)
+                .productId(productId)
+                .quantity(1)
+                .build();
+        basketItemRepository.save(existingBasketItem);
     }
 }
