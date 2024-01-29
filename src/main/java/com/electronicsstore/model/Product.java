@@ -1,6 +1,6 @@
 package com.electronicsstore.model;
 
-import com.electronicsstore.dto.ProductDto;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -36,4 +36,7 @@ public class Product {
     @NonNull
     private int inventory;
 
+    @OneToOne
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
 }

@@ -53,9 +53,9 @@ public class BasketItemService {
 
     @Transactional
     public void remove(Long customerId, Long productId) {
-        BasketItem existingBasketItem = basketItemRepository.findByCustomerIdAndProductId(customerId, productId)
+        basketItemRepository.findByCustomerIdAndProductId(customerId, productId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("BasketItem not found with customer id: %d and product id: %d", customerId, productId)));
 
-        basketItemRepository.deleteByCustomerIdAndProductId(existingBasketItem.getCustomerId(), existingBasketItem.getProductId());
+        basketItemRepository.deleteByCustomerIdAndProductId(customerId, productId);
     }
 }

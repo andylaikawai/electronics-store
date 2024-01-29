@@ -58,17 +58,14 @@ public class CheckoutService {
         return receipt;
     }
 
-    private BigDecimal calculateTotalAmount(List<BasketItem> basketItems) {
+    private BigDecimal calculateTotalPrice(List<BasketItem> basketItems) {
         return basketItems.stream()
-                .map(item -> {
-                    BigDecimal quantity = BigDecimal.valueOf(item.getQuantity());
-                    return item.getProduct().getPrice().multiply(quantity); // TODO discount
-                })
+                .map(BasketItem::calculateDiscountedPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private Receipt createReceipt(Customer customer, List<BasketItem> basketItems) {
-        BigDecimal totalPrice = calculateTotalAmount(basketItems);
+        BigDecimal totalPrice = calculateTotalPrice(basketItems);
         Receipt receipt = Receipt.builder()
                 .totalPrice(totalPrice)
                 .issueDate(LocalDateTime.now())
@@ -76,11 +73,21 @@ public class CheckoutService {
                 .receiptItems(new ArrayList<>())
                 .build();
 
-        List<ReceiptItem> receiptItems = basketItems.stream().map(basketItem -> ReceiptItem.builder()
-                .product(basketItem.getProduct())
-                .quantity(basketItem.getQuantity())
-                .receipt(receipt)
-                .build()).toList();
+        List<ReceiptItem> receiptItems = basketItems.stream().map(basketItem -> {
+            ReceiptItem item = ReceiptItem.builder()
+                    .productName(basketItem.getProduct().getName())
+                    .unitPrice(basketItem.getProduct().getPrice())
+                    .quantity(basketItem.getQuantity())
+                    .discountedPrice(basketItem.calculateDiscountedPrice())
+                    .build();
+
+            Discount discount = basketItem.getProduct().getDiscount();
+            if (discount != null) {
+                item.setDiscountThreshold(discount.getThreshold());
+                item.setDiscountAmount(discount.getAmount());
+            }
+            return item;
+        }).toList();
 
         receipt.setReceiptItems(receiptItems);
 

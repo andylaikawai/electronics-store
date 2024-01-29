@@ -48,31 +48,14 @@ public class CustomerController {
     }
 
     @GetMapping("{customerId}/receipt")
-    public ResponseEntity<ReceiptDto> previewReceipt(@PathVariable Long customerId) {
+    public ResponseEntity<Receipt> previewReceipt(@PathVariable Long customerId) {
         Receipt receipt = checkoutService.previewReceipt(customerId);
-        return new ResponseEntity<>(convertToDto(receipt), HttpStatus.OK);
+        return new ResponseEntity<>(receipt, HttpStatus.OK);
     }
 
     @PostMapping("{customerId}/checkout")
-    public ResponseEntity<ReceiptDto> checkout(@PathVariable Long customerId) {
+    public ResponseEntity<Receipt> checkout(@PathVariable Long customerId) {
         Receipt receipt = checkoutService.checkout(customerId);
-        return new ResponseEntity<>(convertToDto(receipt), HttpStatus.OK);
-    }
-
-    private ReceiptDto convertToDto(Receipt receipt) {
-        return ReceiptDto.builder()
-                .customer(receipt.getCustomer())
-                .totalPrice(receipt.getTotalPrice())
-                .issueDate(receipt.getIssueDate())
-                .receiptItems(receipt.getReceiptItems().stream().map(item ->
-                        ReceiptItemDto.builder()
-                                .product(ProductDto.builder()
-                                        .price(item.getProduct().getPrice())
-                                        .name(item.getProduct().getName())
-                                        .build())
-                                .quantity(item.getQuantity())
-                                .build()
-                ).toList())
-                .build();
+        return new ResponseEntity<>(receipt, HttpStatus.OK);
     }
 }

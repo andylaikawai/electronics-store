@@ -1,8 +1,11 @@
 package com.electronicsstore.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "receipt_items")
@@ -22,11 +25,25 @@ public class ReceiptItem {
     @PositiveOrZero
     private int quantity;
 
-    @ManyToOne
-    @JoinColumn(name = "receipt_id")
-    private Receipt receipt;
+    @Column
+    @NonNull
+    private String productName;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @Column
+    @NonNull
+    @Positive
+    private BigDecimal unitPrice;
+
+    @Column
+    @PositiveOrZero
+    private int discountThreshold;
+
+    @Column
+    @Positive
+    private Double discountAmount;
+
+    @Column
+    @NonNull
+    @Positive
+    private BigDecimal discountedPrice;
 }

@@ -27,7 +27,7 @@ public class Receipt {
     @NotNull
     private LocalDateTime issueDate;
 
-    @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ReceiptItem> receiptItems;
 
     @Column(name = "total_amount")

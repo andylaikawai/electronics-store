@@ -22,8 +22,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -107,53 +106,37 @@ public class CustomerControllerTest {
     void whenPreviewReceipt_thenReturns200() throws Exception {
         Long customerId = 1L;
         Receipt receipt = buildReceipt();
-        ReceiptDto receiptDto = convertToDto(receipt);
 
         when(checkoutService.previewReceipt(customerId)).thenReturn(receipt);
 
         mockMvc.perform(get("/api/customers/{customerId}/receipt", customerId))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(receiptDto)));
+                .andExpect(content().json(objectMapper.writeValueAsString(receipt)));
     }
 
     @Test
     void whenCheckout_thenReturns200() throws Exception {
         Long customerId = 1L;
         Receipt receipt = buildReceipt();
-        ReceiptDto receiptDto = convertToDto(receipt);
 
         when(checkoutService.checkout(customerId)).thenReturn(receipt);
 
         mockMvc.perform(post("/api/customers/{customerId}/checkout", customerId))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(receiptDto)));
+                .andExpect(content().json(objectMapper.writeValueAsString(receipt)));
     }
 
-    private ReceiptDto convertToDto(Receipt receipt) {
-        return ReceiptDto.builder()
-                .customer(receipt.getCustomer())
-                .totalPrice(receipt.getTotalPrice())
-                .issueDate(receipt.getIssueDate())
-                .receiptItems(receipt.getReceiptItems().stream().map(item ->
-                        ReceiptItemDto.builder()
-                                .product(ProductDto.builder()
-                                        .price(item.getProduct().getPrice())
-                                        .name(item.getProduct().getName())
-                                        .build())
-                                .quantity(item.getQuantity())
-                                .build()
-                ).toList())
-                .build();
-    }
-
-    private Receipt buildReceipt(){
+    private Receipt buildReceipt() {
         return Receipt.builder()
-                .receiptItems(List.of(ReceiptItem.builder()
-                        .product(Product.builder()
-                                .name("Test Product")
-                                .price(BigDecimal.TEN)
-                                .productId(1L).build())
-                        .build()))
+                .receiptItems(List.of(
+                                ReceiptItem.builder()
+                                        .productName("Test Product")
+                                        .unitPrice(BigDecimal.TEN)
+                                        .quantity(1)
+                                        .discountedPrice(BigDecimal.TEN)
+                                        .build()
+                        )
+                )
                 .totalPrice(BigDecimal.ONE)
                 .build();
     }
