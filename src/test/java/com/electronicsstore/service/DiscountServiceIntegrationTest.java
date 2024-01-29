@@ -70,7 +70,7 @@ class DiscountServiceIntegrationTest {
                 .discount(discount)
                 .inventory(5)
                 .build();
-        product = productRepository.save(product);
+        productRepository.save(product);
 
         discountService.remove(discount.getDiscountId());
 

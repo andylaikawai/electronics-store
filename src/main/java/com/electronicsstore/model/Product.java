@@ -39,4 +39,7 @@ public class Product {
     @OneToOne
     @JoinColumn(name = "discount_id")
     private Discount discount;
+
+    @Version
+    private int version;
 }

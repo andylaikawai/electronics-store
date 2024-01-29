@@ -6,6 +6,9 @@ import com.electronicsstore.repository.CustomerRepository;
 import com.electronicsstore.repository.ProductRepository;
 import com.electronicsstore.repository.ReceiptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +19,6 @@ import java.util.List;
 
 @Service
 public class CheckoutService {
-
     private final BasketItemRepository basketItemRepository;
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
@@ -42,7 +44,11 @@ public class CheckoutService {
         return createReceipt(customer, basketItems);
     }
 
+    /***
+     * We use optimistic lock to prevent concurrent checkout that lead to dirty read
+     */
     @Transactional
+    @Retryable(retryFor = ObjectOptimisticLockingFailureException.class, maxAttempts = 5, backoff = @Backoff(delay = 500))
     public Receipt checkout(Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() ->
                 new RuntimeException("Customer not found with ID: " + customerId));
@@ -50,10 +56,10 @@ public class CheckoutService {
         List<BasketItem> basketItems = basketItemRepository.findByCustomerId(customerId);
 
         Receipt receipt = createReceipt(customer, basketItems);
-        receiptRepository.save(receipt);
 
         updateProductInventory(basketItems);
         clearBasketItems(customerId);
+        receiptRepository.save(receipt);
 
         return receipt;
     }
