@@ -21,14 +21,18 @@ public class DiscountService {
     }
 
     @Transactional
-    public Product addDiscountToProduct(Long productId, Discount discount) {
+    public Discount addDiscountToProduct(Long productId, int threshold, Double amount) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product with ID: " + productId + " not found."));
 
-        Discount savedDiscount = discountRepository.save(discount);
+        Discount savedDiscount = discountRepository.save(Discount.builder()
+                .threshold(threshold)
+                .amount(amount)
+                .build());
         product.setDiscount(savedDiscount);
+        productRepository.save(product);
 
-        return productRepository.save(product);
+        return savedDiscount;
     }
 
     @Transactional

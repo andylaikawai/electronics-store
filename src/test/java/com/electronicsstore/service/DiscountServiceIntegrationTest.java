@@ -48,10 +48,9 @@ class DiscountServiceIntegrationTest {
         discount = discountRepository.save(discount);
 
         // Then
-        Product updatedProduct = discountService.addDiscountToProduct(product.getProductId(), discount);
-
-        assertNotNull(updatedProduct.getDiscount());
-        assertThat(discount.getDiscountId()).isEqualTo(updatedProduct.getDiscount().getDiscountId());
+        Discount createdDiscount = discountService.addDiscountToProduct(product.getProductId(), discount.getThreshold(), discount.getAmount());
+        Product updatedProduct = productRepository.findById(product.getProductId()).orElseThrow();
+        assertThat(createdDiscount.getDiscountId()).isEqualTo(updatedProduct.getDiscount().getDiscountId());
     }
 
     @Test

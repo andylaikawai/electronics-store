@@ -1,5 +1,6 @@
 package com.electronicsstore.controller;
 
+import com.electronicsstore.model.Discount;
 import com.electronicsstore.model.Product;
 import com.electronicsstore.service.ProductService;
 import com.electronicsstore.service.DiscountService;
@@ -73,6 +74,28 @@ public class AdminControllerTest {
         doNothing().when(productService).removeProduct(productId);
 
         mockMvc.perform(delete("/api/admin/products/{productId}", productId))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void whenCreateDiscount_thenReturns201() throws Exception {
+        Discount discount = Discount.builder().threshold(1).amount(0.8).build();
+        when(discountService.addDiscountToProduct(anyLong(), anyInt(), anyDouble())).thenReturn(discount);
+
+        mockMvc.perform(post("/api/admin/discounts/add-to-product/{productId}", -1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(discount)))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(objectMapper.writeValueAsString(discount)));
+    }
+
+    @Test
+    void whenRemoveDiscount_thenReturns200() throws Exception {
+        Long discountId = 1L;
+
+        doNothing().when(discountService).remove(discountId);
+
+        mockMvc.perform(delete("/api/admin/discounts/{discountId}", discountId))
                 .andExpect(status().isOk());
     }
 }

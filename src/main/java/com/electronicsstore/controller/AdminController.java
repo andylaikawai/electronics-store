@@ -1,6 +1,7 @@
 package com.electronicsstore.controller;
 
 import com.electronicsstore.dto.ProductDto;
+import com.electronicsstore.model.Discount;
 import com.electronicsstore.model.Product;
 import com.electronicsstore.service.DiscountService;
 import com.electronicsstore.service.ProductService;
@@ -34,9 +35,16 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-//    @PostMapping("/discounts")
-//    public ResponseEntity<Discount> addDiscount(@RequestBody Discount discount) {
-//        Discount createdDiscount = discountService.addDiscount(discount);
-//        return new ResponseEntity<>(createdDiscount, HttpStatus.CREATED);
-//    }
+    @PostMapping("/discounts/add-to-product/{productId}")
+    public ResponseEntity<Discount> addDiscountToProduct(@PathVariable Long productId, @RequestBody Discount discount) {
+        Discount createdDiscount = discountService.addDiscountToProduct(productId, discount.getThreshold(), discount.getAmount());
+        return new ResponseEntity<>(createdDiscount, HttpStatus.CREATED);
+    }
+
+    // API to remove a discount
+    @DeleteMapping("/discounts/{discountId}")
+    public ResponseEntity<Void> removeDiscount(@PathVariable Long discountId) {
+        discountService.remove(discountId);
+        return ResponseEntity.ok().build();
+    }
 }
