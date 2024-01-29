@@ -1,5 +1,6 @@
 package com.electronicsstore.controller;
 
+import com.electronicsstore.dto.DiscountDto;
 import com.electronicsstore.model.Discount;
 import com.electronicsstore.model.Product;
 import com.electronicsstore.service.ProductService;
@@ -79,12 +80,19 @@ public class AdminControllerTest {
 
     @Test
     void whenCreateDiscount_thenReturns201() throws Exception {
-        Discount discount = Discount.builder().threshold(1).amount(0.8).build();
+        DiscountDto discountDto = DiscountDto.builder()
+                .threshold(1)
+                .amount(0.8)
+                .build();
+        Discount discount = Discount.builder()
+                .threshold(discountDto.getThreshold())
+                .amount(discountDto.getAmount())
+                .build();
         when(discountService.addDiscountToProduct(anyLong(), anyInt(), anyDouble())).thenReturn(discount);
 
         mockMvc.perform(post("/api/admin/discounts/add-to-product/{productId}", -1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(discount)))
+                        .content(objectMapper.writeValueAsString(discountDto)))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(objectMapper.writeValueAsString(discount)));
     }

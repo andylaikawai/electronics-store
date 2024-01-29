@@ -1,6 +1,9 @@
 package com.electronicsstore.service;
 
+import com.electronicsstore.model.Discount;
 import com.electronicsstore.model.Product;
+import com.electronicsstore.repository.BasketItemRepository;
+import com.electronicsstore.repository.DiscountRepository;
 import com.electronicsstore.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -15,6 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class ProductServiceIntegrationTest {
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private DiscountRepository discountRepository;
+
+    @Autowired
+    private BasketItemRepository basketItemRepository;
 
     @Autowired
     private ProductService productService;
@@ -42,4 +52,30 @@ class ProductServiceIntegrationTest {
         assertEquals(savedProduct, fetchedProduct);
 
     }
+
+    @Test
+    void testDeleteProduct() {
+        // Given
+        Discount discount = Discount.builder().threshold(1).amount(10.0).build();
+        Product product = Product.builder()
+                .name("Test Product")
+                .price(BigDecimal.valueOf(99.99))
+                .discount(discount)
+                .inventory(10)
+                .build();
+
+
+        // When
+        Discount savedDiscount = discountRepository.save(discount);
+        Product savedProduct = productRepository.save(product);
+        productService.removeProduct(savedProduct.getProductId());
+
+        // Then
+        assertThat(discountRepository.findById(savedDiscount.getDiscountId())).isEmpty();
+        assertThat(productRepository.findById(savedProduct.getProductId())).isEmpty();
+
+
+    }
+
+
 }

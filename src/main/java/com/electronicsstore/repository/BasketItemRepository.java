@@ -16,4 +16,6 @@ public interface BasketItemRepository extends JpaRepository<BasketItem, BasketIt
     void deleteByCustomerIdAndProductId(@NotNull Long customerId, @NotNull Long productId);
 
     void deleteByCustomerId(@NotNull Long customerId);
+
+    void deleteByProductId(@NotNull Long productId);
 }

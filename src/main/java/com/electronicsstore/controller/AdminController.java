@@ -1,5 +1,6 @@
 package com.electronicsstore.controller;
 
+import com.electronicsstore.dto.DiscountDto;
 import com.electronicsstore.dto.ProductDto;
 import com.electronicsstore.model.Discount;
 import com.electronicsstore.model.Product;
@@ -36,8 +37,8 @@ public class AdminController {
     }
 
     @PostMapping("/discounts/add-to-product/{productId}")
-    public ResponseEntity<Discount> addDiscountToProduct(@PathVariable Long productId, @RequestBody Discount discount) {
-        Discount createdDiscount = discountService.addDiscountToProduct(productId, discount.getThreshold(), discount.getAmount());
+    public ResponseEntity<Discount> addDiscountToProduct(@PathVariable Long productId, @RequestBody DiscountDto discountDto) {
+        Discount createdDiscount = discountService.addDiscountToProduct(productId, discountDto.getThreshold(), discountDto.getAmount());
         return new ResponseEntity<>(createdDiscount, HttpStatus.CREATED);
     }
 
