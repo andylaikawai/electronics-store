@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 public class CustomerService {
@@ -16,6 +18,11 @@ public class CustomerService {
     @Autowired
     public CustomerService(CustomerRepository CustomerRepository) {
         this.CustomerRepository = CustomerRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Customer> getAllCustomers() {
+        return CustomerRepository.findAll();
     }
 
     @Transactional(readOnly = true)

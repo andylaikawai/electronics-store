@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -25,6 +26,12 @@ public class ProductService {
         this.productRepository = productRepository;
         this.basketItemRepository = basketItemRepository;
         this.discountRepository = discountRepository;
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
     @Transactional(readOnly = true)

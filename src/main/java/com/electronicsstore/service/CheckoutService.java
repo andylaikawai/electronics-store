@@ -36,6 +36,11 @@ public class CheckoutService {
     }
 
     @Transactional(readOnly = true)
+    public List<Receipt> getAllReceipts() {
+        return receiptRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public Receipt previewReceipt(Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() ->
                 new RuntimeException("Customer not found with ID: " + customerId));
